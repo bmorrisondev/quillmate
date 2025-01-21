@@ -13,7 +13,7 @@ export default async function Page() {
           <Link href="/sign-in">Sign In</Link>
         </SignedOut>
         <SignedIn>
-          <ItemList />
+          <Link href="/app">Go to App</Link>
         </SignedIn>
       </div>
     </div>

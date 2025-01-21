@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import SupabaseProvider from "@/lib/supabase-provider";
 
 export default async function AppLayout({
   children,
@@ -14,7 +15,9 @@ export default async function AppLayout({
 
   return (
     <div className="container mx-auto p-4">
-      {children}
+      <SupabaseProvider>
+        {children}
+      </SupabaseProvider>
     </div>
   );
 }

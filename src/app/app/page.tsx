@@ -2,54 +2,25 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { getSupabaseClient } from '@/lib/supabase'
 import { type Article } from '@/lib/supabase'
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from 'sonner'
-import { useSession, useUser } from '@clerk/nextjs'
-import { createClient } from '@supabase/supabase-js'
+import { useUser } from '@clerk/nextjs'
+import { useSupabase } from '@/lib/supabase-provider'
+import { useArticles } from '@/lib/hooks/use-articles'
 
 export default function AppPage() {
-  const [articles, setArticles] = useState<Article[]>([])
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
   const [content, setContent] = useState('')
-  const { session } = useSession()
   const { user } = useUser()
-
-  function createClerkSupabaseClient() {
-    return createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_KEY!,
-      {
-        global: {
-          // Get the custom Supabase token from Clerk
-          fetch: async (url, options = {}) => {
-            const clerkToken = await session?.getToken({
-              template: 'supabase',
-            })
-
-            // Insert the Clerk Supabase token into the headers
-            const headers = new Headers(options?.headers)
-            headers.set('Authorization', `Bearer ${clerkToken}`)
-
-            // Now call the default fetch
-            return fetch(url, {
-              ...options,
-              headers,
-            })
-          },
-        },
-      },
-    )
-  }
-
-  const supabase = createClerkSupabaseClient()
+  const { supabase, isLoaded } = useSupabase()
+  const { articles, isLoading, fetchArticles } = useArticles()
 
   useEffect(() => {
-    if(user) {
+    if (user && isLoaded) {
       fetchArticles()
     }
-  }, [user])
+  }, [user, isLoaded, fetchArticles])
 
   useEffect(() => {
     if (selectedArticle) {
@@ -59,22 +30,9 @@ export default function AppPage() {
     }
   }, [selectedArticle])
 
-  const fetchArticles = async () => {
-    const { data, error } = await supabase
-      .from('articles')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      toast.error('Error fetching articles')
-      console.error('Error:', error)
-      return
-    }
-
-    setArticles(data || [])
-  }
-
   const createNewArticle = async () => {
+    if (!supabase || !isLoaded) return
+
     const { data, error } = await supabase
       .from('articles')
       .insert([{ 
@@ -82,8 +40,6 @@ export default function AppPage() {
         content: '# New Article\n\nStart writing here...' 
       }])
       .select()
-
-    console.log(data, error)
 
     if (error) {
       toast.error('Error creating article')
@@ -98,7 +54,7 @@ export default function AppPage() {
   }
 
   const updateArticle = async () => {
-    if (!selectedArticle) return
+    if (!supabase || !isLoaded || !selectedArticle) return
 
     const { error } = await supabase
       .from('articles')
@@ -125,24 +81,29 @@ export default function AppPage() {
         <Button 
           onClick={createNewArticle}
           className="mb-4"
+          disabled={!isLoaded}
         >
           New Article
         </Button>
         <div className="overflow-y-auto flex-1">
-          {articles.map((article) => (
-            <div
-              key={article.id}
-              className={`p-2 mb-2 rounded cursor-pointer hover:bg-gray-100 ${
-                selectedArticle?.id === article.id ? 'bg-gray-100' : ''
-              }`}
-              onClick={() => setSelectedArticle(article)}
-            >
-              <h3 className="font-medium truncate">{article.title}</h3>
-              <p className="text-sm text-gray-500 truncate">
-                {new Date(article.created_at).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
+          {isLoading ? (
+            <div className="text-center text-gray-500">Loading articles...</div>
+          ) : (
+            articles.map((article) => (
+              <div
+                key={article.id}
+                className={`p-2 mb-2 rounded cursor-pointer hover:bg-gray-100 ${
+                  selectedArticle?.id === article.id ? 'bg-gray-100' : ''
+                }`}
+                onClick={() => setSelectedArticle(article)}
+              >
+                <h3 className="font-medium truncate">{article.title}</h3>
+                <p className="text-sm text-gray-500 truncate">
+                  {new Date(article.created_at).toLocaleDateString()}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -152,12 +113,18 @@ export default function AppPage() {
           <>
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-xl font-bold">{selectedArticle.title}</h2>
-              <Button onClick={updateArticle}>Save</Button>
+              <Button 
+                onClick={updateArticle}
+                disabled={!isLoaded}
+              >
+                Save
+              </Button>
             </div>
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="flex-1 resize-none font-mono"
+              disabled={!isLoaded}
             />
           </>
         ) : (
