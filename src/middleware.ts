@@ -6,6 +6,17 @@ export default clerkMiddleware(async (auth, request) => {
   if (!isPublicRoute(request)) {
     await auth.protect()
   }
+},   {
+  organizationSyncOptions: {
+    organizationPatterns: [
+      '/orgs/:slug', // Match the org slug
+      '/orgs/:slug/(.*)', // Wildcard match for optional trailing path segments
+    ],
+    personalAccountPatterns: [
+      '/me', // Match the personal account
+      '/me/(.*)', // Wildcard match for optional trailing path segments
+    ],
+  },
 })
 
 export const config = {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/supabase'
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from 'sonner'
-import { useUser } from '@clerk/nextjs'
+import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { useSupabase } from '@/lib/supabase-provider'
 import { useArticles } from '@/lib/hooks/use-articles'
 
@@ -83,7 +83,7 @@ export default function AppPage() {
           className="mb-4"
           disabled={!isLoaded}
         >
-          New Article
+          New Article (ORGS)
         </Button>
         <div className="overflow-y-auto flex-1">
           {isLoading ? (
@@ -105,6 +105,13 @@ export default function AppPage() {
             ))
           )}
         </div>
+        <OrganizationSwitcher
+          hideSlug={false} // Allow users to customize the org's URL slug
+          hidePersonal={false} // Allow users to select their personal account
+          afterCreateOrganizationUrl="/orgs/:slug" // Navigate to the org's slug after creating an org
+          afterSelectOrganizationUrl="/orgs/:slug" // Navigate to the org's slug after selecting  it
+          afterSelectPersonalUrl="/me" // Navigate to the personal account after selecting it
+        />
       </div>
 
       {/* Middle Pane - Editor */}

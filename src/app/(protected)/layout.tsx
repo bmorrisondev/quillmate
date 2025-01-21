@@ -14,10 +14,8 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <SupabaseProvider>
-        {children}
-      </SupabaseProvider>
-    </div>
+    <SupabaseProvider>
+      {children}
+    </SupabaseProvider>
   );
 }
