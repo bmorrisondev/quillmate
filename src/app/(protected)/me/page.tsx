@@ -13,14 +13,37 @@ export default function AppPage() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
   const [content, setContent] = useState('')
   const { user } = useUser()
-  const { supabase, isLoaded } = useSupabase()
-  const { articles, isLoading, fetchArticles } = useArticles()
+  const { supabase } = useSupabase()
+  const [ articles, setArticles ] = useState<Article[]>([])
+  const [ isLoading, setIsLoading ] = useState(false)
+
+  const fetchArticles = async () => {
+    if (!supabase) return
+
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        throw error
+      }
+
+      setArticles(data || [])
+    } catch (error) {
+      toast.error('Error fetching articles')
+      console.error('Error:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
-    if (user && isLoaded) {
+    if (user) {
       fetchArticles()
     }
-  }, [user, isLoaded, fetchArticles])
+  }, [user])
 
   useEffect(() => {
     if (selectedArticle) {
@@ -31,7 +54,7 @@ export default function AppPage() {
   }, [selectedArticle])
 
   const createNewArticle = async () => {
-    if (!supabase || !isLoaded) return
+    if (!supabase) return
 
     const { data, error } = await supabase
       .from('articles')
@@ -54,7 +77,7 @@ export default function AppPage() {
   }
 
   const updateArticle = async () => {
-    if (!supabase || !isLoaded || !selectedArticle) return
+    if (!supabase || !selectedArticle) return
 
     const { error } = await supabase
       .from('articles')
@@ -81,7 +104,6 @@ export default function AppPage() {
         <Button 
           onClick={createNewArticle}
           className="mb-4"
-          disabled={!isLoaded}
         >
           New Article (ORGS)
         </Button>
@@ -122,7 +144,6 @@ export default function AppPage() {
               <h2 className="text-xl font-bold">{selectedArticle.title}</h2>
               <Button 
                 onClick={updateArticle}
-                disabled={!isLoaded}
               >
                 Save
               </Button>
@@ -131,7 +152,6 @@ export default function AppPage() {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="flex-1 resize-none font-mono"
-              disabled={!isLoaded}
             />
           </>
         ) : (

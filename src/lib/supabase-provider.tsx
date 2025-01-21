@@ -24,6 +24,8 @@ export default function SupabaseProvider({
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
+    if(!session) return
+
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_KEY!,
@@ -33,6 +35,8 @@ export default function SupabaseProvider({
             const clerkToken = await session?.getToken({
               template: 'supabase',
             })
+
+            console.log('TRIGGERED', clerkToken)
 
             const headers = new Headers(options?.headers)
             headers.set('Authorization', `Bearer ${clerkToken}`)
@@ -52,7 +56,7 @@ export default function SupabaseProvider({
 
   return (
     <Context.Provider value={{ supabase, isLoaded }}>
-      {children}
+      {!isLoaded ? <div>Loading...</div> : children }
     </Context.Provider>
   )
 }
@@ -64,6 +68,6 @@ export const useSupabase = () => {
   }
   return { 
     supabase: context.supabase,
-    isLoaded: context.isLoaded 
+    isLoaded: context.isLoaded
   }
 }
