@@ -7,8 +7,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import {common, createLowlight} from 'lowlight'
+import { extractTitleFromContent } from '@/lib/utils/content'
 
 const lowlight = createLowlight(common)
 
@@ -96,8 +97,22 @@ export function Editor({
               {isSaving ? 'Saving...' : 'Edited'}
             </span>
           )}
+          {!extractTitleFromContent(content) && (
+            <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
+              Missing H1 Title
+            </span>
+          )}
         </div>
         <div className="flex gap-2">
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
+            disabled={!editor?.can().chain().focus().toggleHeading({ level: 1 }).run()}
+            className={editor?.isActive('heading', { level: 1 }) ? 'is-active' : ''}
+          >
+            H1
+          </Button>
           <Button 
             variant="outline"
             size="sm"

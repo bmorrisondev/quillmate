@@ -10,6 +10,7 @@ import { useArticles } from '@/lib/hooks/use-articles'
 import { Sidebar } from '@/components/sidebar'
 import { Editor } from '@/components/editor'
 import { useDebouncedSave } from '@/lib/hooks/use-debounced-save'
+import { extractTitleFromContent } from '@/lib/utils/content'
 
 export default function AppPage() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
@@ -58,11 +59,12 @@ export default function AppPage() {
   const createNewArticle = async () => {
     if (!supabase) return
 
+    const defaultContent = '# New Article\n\nStart writing here...'
     const { data, error } = await supabase
       .from('articles')
       .insert([{ 
         title: 'New Article', 
-        content: '# New Article\n\nStart writing here...' 
+        content: defaultContent
       }])
       .select()
 
@@ -74,6 +76,7 @@ export default function AppPage() {
 
     if (data && data[0]) {
       setSelectedArticle(data[0])
+      setContent(defaultContent)
       await fetchArticles()
     }
   }
@@ -81,10 +84,13 @@ export default function AppPage() {
   const updateArticle = async () => {
     if (!supabase || !selectedArticle) return
 
+    const title = extractTitleFromContent(content) || selectedArticle.title
+
     const { error } = await supabase
       .from('articles')
       .update({ 
         content,
+        title,
         updated_at: new Date().toISOString() 
       })
       .eq('id', selectedArticle.id)
