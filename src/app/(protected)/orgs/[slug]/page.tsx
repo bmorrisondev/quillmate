@@ -3,13 +3,18 @@
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/supabase'
-import { Textarea } from "@/components/ui/textarea"
 import { toast } from 'sonner'
 import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { useSupabase } from '@/lib/supabase-provider'
 import { useArticles } from '@/lib/hooks/use-articles'
+import { Sidebar } from '@/components/sidebar'
+import { Editor } from '@/components/editor'
 
-export default function AppPage() {
+export default function OrgPage({
+  params
+}: {
+  params: { slug: string }
+}) {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
   const [content, setContent] = useState('')
   const { user } = useUser()
@@ -77,66 +82,23 @@ export default function AppPage() {
   return (
     <div className="flex h-[calc(100vh-4rem)] gap-4 p-4">
       {/* Left Pane - Article List */}
-      <div className="w-64 border-r pr-4 flex flex-col">
-        <Button 
-          onClick={createNewArticle}
-          className="mb-4"
-        >
-          New Article (ORGS)
-        </Button>
-        <div className="overflow-y-auto flex-1">
-          {isLoading ? (
-            <div className="text-center text-gray-500">Loading articles...</div>
-          ) : (
-            articles.map((article) => (
-              <div
-                key={article.id}
-                className={`p-2 mb-2 rounded cursor-pointer hover:bg-gray-100 ${
-                  selectedArticle?.id === article.id ? 'bg-gray-100' : ''
-                }`}
-                onClick={() => setSelectedArticle(article)}
-              >
-                <h3 className="font-medium truncate">{article.title}</h3>
-                <p className="text-sm text-gray-500 truncate">
-                  {new Date(article.created_at).toLocaleDateString()}
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-        <OrganizationSwitcher
-          hideSlug={false} // Allow users to customize the org's URL slug
-          hidePersonal={false} // Allow users to select their personal account
-          afterCreateOrganizationUrl="/orgs/:slug" // Navigate to the org's slug after creating an org
-          afterSelectOrganizationUrl="/orgs/:slug" // Navigate to the org's slug after selecting  it
-          afterSelectPersonalUrl="/me" // Navigate to the personal account after selecting it
-        />
-      </div>
+      <Sidebar
+        articles={articles}
+        isLoading={isLoading}
+        selectedArticle={selectedArticle}
+        onArticleSelect={setSelectedArticle}
+        onNewArticle={createNewArticle}
+        buttonText="New Article (ORG)"
+      />
 
       {/* Middle Pane - Editor */}
-      <div className="flex-1 flex flex-col">
-        {selectedArticle ? (
-          <>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-bold">{selectedArticle.title}</h2>
-              <Button 
-                onClick={updateArticle}
-              >
-                Save
-              </Button>
-            </div>
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              className="flex-1 resize-none font-mono"
-            />
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select an article or create a new one
-          </div>
-        )}
-      </div>
+      <Editor
+        article={selectedArticle}
+        content={content}
+        onContentChange={setContent}
+        onSave={updateArticle}
+        isLoading={isLoading}
+      />
 
       {/* Right Pane - AI Chat */}
       <div className="w-80 border-l pl-4">
