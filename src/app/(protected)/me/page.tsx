@@ -8,9 +8,10 @@ import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { useSupabase } from '@/lib/supabase-provider'
 import { useArticles } from '@/lib/hooks/use-articles'
 import { Sidebar } from '@/components/sidebar'
-import { Editor } from '@/components/editor'
+import { BlockEditor } from '@/components/block-editor'
 import { useDebouncedSave } from '@/lib/hooks/use-debounced-save'
 import { extractTitleFromContent } from '@/lib/utils/content'
+import { Editor } from '@/components/editor'
 
 export default function AppPage() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
