@@ -108,7 +108,7 @@ export default function AppPage() {
   const { hasUnsavedChanges, isSaving } = useDebouncedSave(content, updateArticle)
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] gap-4 p-4">
+    <div className="flex h-screen gap-4 p-4">
       {/* Left Pane - Article List */}
       <Sidebar
         articles={articles}

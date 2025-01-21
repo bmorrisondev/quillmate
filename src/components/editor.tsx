@@ -7,9 +7,13 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { useCallback, useEffect, useMemo } from 'react'
+import Image from '@tiptap/extension-image'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import {common, createLowlight} from 'lowlight'
 import { extractTitleFromContent } from '@/lib/utils/content'
+import { uploadFile } from '@/lib/utils/upload'
+import { useSupabase } from '@/lib/supabase-provider'
+import { toast } from 'sonner'
 
 const lowlight = createLowlight(common)
 
@@ -32,6 +36,9 @@ export function Editor({
   hasUnsavedChanges = false,
   isSaving = false
 }: EditorProps) {
+  const { supabase } = useSupabase()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -43,6 +50,10 @@ export function Editor({
       }),
       CodeBlockLowlight.configure({
         lowlight,
+      }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
       }),
     ],
     editorProps: {
@@ -79,6 +90,41 @@ export function Editor({
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
   }, [editor])
 
+  const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editor || !supabase) return
+
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    try {
+      // Show loading state
+      const tempUrl = URL.createObjectURL(file)
+      editor.chain().focus().setImage({ src: tempUrl }).run()
+
+      // Upload file
+      const publicUrl = await uploadFile(supabase, file)
+
+      // Replace temp URL with actual URL
+      const doc = editor.state.doc
+      doc.descendants((node, pos) => {
+        if (node.type.name === 'image' && node.attrs.src === tempUrl) {
+          editor.chain().setNodeSelection(pos).updateAttributes('image', {
+            src: publicUrl,
+          }).run()
+          return false
+        }
+      })
+    } catch (error) {
+      console.error('Error uploading file:', error)
+      toast.error('Failed to upload image')
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }, [editor, supabase])
+
   if (!article) {
     return (
       <div className="flex-1 flex items-center justify-center h-full text-gray-500">
@@ -89,6 +135,13 @@ export function Editor({
 
   return (
     <div className="flex-1 flex flex-col">
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*"
+        onChange={handleFileUpload}
+      />
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h2 className="text-xl font-bold">{article.title}</h2>
@@ -147,6 +200,13 @@ export function Editor({
             className={editor?.isActive('link') ? 'is-active' : ''}
           >
             link
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            image
           </Button>
           <Button 
             onClick={onSave}

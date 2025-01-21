@@ -46,6 +46,7 @@
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "^2.48.0",
     "@tiptap/extension-code-block-lowlight": "^2.11.2",
+    "@tiptap/extension-image": "^2.11.2",
     "@tiptap/extension-link": "^2.11.2",
     "@tiptap/extension-placeholder": "^2.11.2",
     "@tiptap/pm": "^2.11.2",

@@ -2,6 +2,20 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import SupabaseProvider from "@/lib/supabase-provider";
 
+export function ProtectedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen">
+      <SupabaseProvider>
+        {children}
+      </SupabaseProvider>
+    </div>
+  );
+}
+
 export default async function AppLayout({
   children,
 }: {
@@ -14,8 +28,8 @@ export default async function AppLayout({
   }
 
   return (
-    <SupabaseProvider>
+    <ProtectedLayout>
       {children}
-    </SupabaseProvider>
+    </ProtectedLayout>
   );
 }
