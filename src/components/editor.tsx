@@ -7,7 +7,6 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-// import { lowlight } from 'lowlight'
 import { useCallback, useEffect } from 'react'
 import {common, createLowlight} from 'lowlight'
 
@@ -19,6 +18,8 @@ interface EditorProps {
   onContentChange: (content: string) => void
   onSave: () => void
   isLoading?: boolean
+  hasUnsavedChanges?: boolean
+  isSaving?: boolean
 }
 
 export function Editor({
@@ -26,7 +27,9 @@ export function Editor({
   content,
   onContentChange,
   onSave,
-  isLoading = false
+  isLoading = false,
+  hasUnsavedChanges = false,
+  isSaving = false
 }: EditorProps) {
   const editor = useEditor({
     extensions: [
@@ -86,7 +89,14 @@ export function Editor({
   return (
     <div className="flex-1 flex flex-col">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-xl font-bold">{article.title}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-bold">{article.title}</h2>
+          {hasUnsavedChanges && (
+            <span className="px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+              {isSaving ? 'Saving...' : 'Edited'}
+            </span>
+          )}
+        </div>
         <div className="flex gap-2">
           <Button 
             variant="outline"
@@ -125,9 +135,9 @@ export function Editor({
           </Button>
           <Button 
             onClick={onSave}
-            disabled={isLoading}
+            disabled={isLoading || isSaving}
           >
-            Save
+            {isSaving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </div>

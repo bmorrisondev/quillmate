@@ -9,6 +9,7 @@ import { useSupabase } from '@/lib/supabase-provider'
 import { useArticles } from '@/lib/hooks/use-articles'
 import { Sidebar } from '@/components/sidebar'
 import { Editor } from '@/components/editor'
+import { useDebouncedSave } from '@/lib/hooks/use-debounced-save'
 
 export default function AppPage() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
@@ -94,9 +95,10 @@ export default function AppPage() {
       return
     }
 
-    toast.success('Article updated')
     await fetchArticles()
   }
+
+  const { hasUnsavedChanges, isSaving } = useDebouncedSave(content, updateArticle)
 
   return (
     <div className="flex h-[calc(100vh-4rem)] gap-4 p-4">
@@ -117,6 +119,8 @@ export default function AppPage() {
         onContentChange={setContent}
         onSave={updateArticle}
         isLoading={isLoading}
+        hasUnsavedChanges={hasUnsavedChanges}
+        isSaving={isSaving}
       />
 
       {/* Right Pane - AI Chat */}
