@@ -25,10 +25,18 @@ export default function AppPage() {
     if (!supabase) return
 
     try {
-      const { data, error } = await supabase
+      const { data: { user } } = await supabase.auth.getUser()
+
+      const { data: articles } = await supabase
         .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false })
+        .select(`
+          *,
+          creator:users!articles_created_by_fkey (
+            first_name,
+            last_name
+          )
+        `)
+        .order('updated_at', { ascending: false })
 
       if (error) {
         throw error

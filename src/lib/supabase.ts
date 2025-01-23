@@ -12,10 +12,15 @@ export function getSupabaseClient(supabaseUrl?: string, supabaseKey?: string) {
 }
 
 export type Article = {
-  id: number
+  id: string
   title: string
   content: string
-  user_id: string
+  owner_id: string
   created_at: string
   updated_at: string
+  created_by: string
+  creator?: {
+    first_name: string | null
+    last_name: string | null
+  }
 }

@@ -44,7 +44,14 @@ export default function OrgPage({
         title: 'New Article', 
         content: '# New Article\n\nStart writing here...' 
       }])
-      .select()
+      .select(`
+        *,
+        creator:users!articles_created_by_fkey (
+          first_name,
+          last_name
+        )
+      `)
+      .order('updated_at', { ascending: false })
 
     if (error) {
       toast.error('Error creating article')

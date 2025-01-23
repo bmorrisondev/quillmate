@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/supabase'
-import { OrganizationSwitcher } from '@clerk/nextjs'
+import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
+import { cn } from '@/lib/utils'
 
 interface SidebarProps {
   articles: Article[]
@@ -34,17 +35,26 @@ export function Sidebar({
           <div className="text-center text-gray-500">Loading articles...</div>
         ) : (
           articles.map((article) => (
-            <div
+            <div 
               key={article.id}
-              className={`p-2 mb-2 rounded cursor-pointer hover:bg-gray-100 ${
-                selectedArticle?.id === article.id ? 'bg-gray-100' : ''
-              }`}
+              className={cn(
+                "px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100",
+                selectedArticle?.id === article.id && "bg-gray-100"
+              )}
               onClick={() => onArticleSelect(article)}
             >
-              <h3 className="font-medium truncate">{article.title}</h3>
-              <p className="text-sm text-gray-500 truncate">
-                {new Date(article.created_at).toLocaleDateString()}
-              </p>
+              <h3 className="font-medium">{article.title || 'Untitled'}</h3>
+              <div className="flex items-center gap-2 text-sm text-gray-500">
+                <span>{new Date(article.updated_at).toLocaleDateString()}</span>
+                {article.creator && (
+                  <>
+                    <span>•</span>
+                    <span>
+                      {article.creator.first_name} {article.creator.last_name}
+                    </span>
+                  </>
+                )}
+              </div>
             </div>
           ))
         )}
@@ -58,6 +68,7 @@ export function Sidebar({
           afterSelectPersonalUrl="/me"
         />
       )}
+      <UserButton />
     </div>
   )
 }
