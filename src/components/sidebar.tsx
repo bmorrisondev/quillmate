@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/supabase'
-import { OrganizationSwitcher, UserButton } from '@clerk/nextjs'
+import { OrganizationSwitcher, UserButton, useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 
 interface SidebarProps {
@@ -22,8 +22,14 @@ export function Sidebar({
   buttonText = "New Article",
   showOrgSwitcher = true
 }: SidebarProps) {
+  const { user } = useUser()
+
   return (
     <div className="w-64 border-r pr-4 flex flex-col">
+      <div className="flex items-center gap-2 pb-2">
+        <UserButton />
+        {user?.fullName}
+      </div>
       <Button 
         onClick={onNewArticle}
         className="mb-4"
@@ -46,11 +52,11 @@ export function Sidebar({
               <h3 className="font-medium">{article.title || 'Untitled'}</h3>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>{new Date(article.updated_at).toLocaleDateString()}</span>
-                {article.creator && (
+                {article.first_name && (
                   <>
                     <span>•</span>
                     <span>
-                      {article.creator.first_name} {article.creator.last_name}
+                      {article.first_name} {article.last_name}
                     </span>
                   </>
                 )}
@@ -68,7 +74,6 @@ export function Sidebar({
           afterSelectPersonalUrl="/me"
         />
       )}
-      <UserButton />
     </div>
   )
 }

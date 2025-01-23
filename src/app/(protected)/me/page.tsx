@@ -25,24 +25,16 @@ export default function AppPage() {
     if (!supabase) return
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-
-      const { data: articles } = await supabase
-        .from('articles')
-        .select(`
-          *,
-          creator:users!articles_created_by_fkey (
-            first_name,
-            last_name
-          )
-        `)
+      const { data: articles, error } = await supabase
+        .from('articles_with_users')
+        .select('*')
         .order('updated_at', { ascending: false })
 
       if (error) {
         throw error
       }
 
-      setArticles(data || [])
+      setArticles(articles || [])
     } catch (error) {
       toast.error('Error fetching articles')
       console.error('Error:', error)
@@ -68,7 +60,7 @@ export default function AppPage() {
   const createNewArticle = async () => {
     if (!supabase) return
 
-    const defaultContent = '# New Article\n\nStart writing here...'
+    const defaultContent = '<h1>New Article</h1><p>Start writing here...</p>'
     const { data, error } = await supabase
       .from('articles')
       .insert([{ 

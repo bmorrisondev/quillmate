@@ -19,8 +19,7 @@ export type Article = {
   created_at: string
   updated_at: string
   created_by: string
-  creator?: {
-    first_name: string | null
-    last_name: string | null
-  }
+  first_name: string | null
+  last_name: string | null
+  avatar_url: string | null
 }

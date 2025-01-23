@@ -42,15 +42,9 @@ export default function OrgPage({
       .from('articles')
       .insert([{ 
         title: 'New Article', 
-        content: '# New Article\n\nStart writing here...' 
+        content: '<h1>New Article</h1><p>Start writing here...</p>' 
       }])
-      .select(`
-        *,
-        creator:users!articles_created_by_fkey (
-          first_name,
-          last_name
-        )
-      `)
+      .select(`*`)
       .order('updated_at', { ascending: false })
 
     if (error) {

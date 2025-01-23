@@ -132,11 +132,12 @@ Deno.serve(async (req) => {
       // Handle user update
       const { data, error } = await supabase
         .from('organizations')
-        .create({
+        .insert([{
           id: event.data.id,
           name: event.data.name,
+          created_at: new Date(event.data.created_at).toISOString(),
           updated_at: new Date(event.data.updated_at).toISOString(),
-        })
+        }])
         .select()
         .single()
 
@@ -170,15 +171,13 @@ Deno.serve(async (req) => {
     case 'organizationMembership.created': {
       const { data, error } = await supabase
         .from('members')
-        .insert([
-          {
+        .insert([{
             id: event.data.id,
             user_id: event.data.public_user_data?.user_id,
             organization_id: event.data.organization?.id,
             created_at: new Date(event.data.created_at).toISOString(),
             updated_at: new Date(event.data.updated_at).toISOString(),
-          },
-        ])
+        }])
         .select()
         .single()
 
