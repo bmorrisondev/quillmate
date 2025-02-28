@@ -26,7 +26,7 @@ export default function AppPage() {
 
     try {
       const { data: articles, error } = await supabase
-        .from('articles_with_users')
+        .from('articles')
         .select('*')
         .order('updated_at', { ascending: false })
 

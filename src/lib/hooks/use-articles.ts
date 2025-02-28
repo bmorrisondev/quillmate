@@ -13,8 +13,12 @@ export function useArticles() {
 
     setIsLoading(true)
     try {
+      // const { data, error } = await supabase
+      //   .from('articles_with_users')
+      //   .select('*')
+      //   .order('created_at', { ascending: false })      
       const { data, error } = await supabase
-        .from('articles_with_users')
+        .from('articles2')
         .select('*')
         .order('created_at', { ascending: false })
 
