@@ -1,5 +1,3 @@
-import Auth from "@/components/Auth"
-import ItemList from "@/components/ItemList"
 import { SignedIn, SignedOut } from "@clerk/nextjs"
 import Link from "next/link"
 

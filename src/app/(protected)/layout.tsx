@@ -16,11 +16,7 @@ export function ProtectedLayout({
   );
 }
 
-export default async function AppLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function AppLayout({ children, }: { children: React.ReactNode; }) {
   const { userId } = await auth();
 
   if (!userId) {
