@@ -29,21 +29,10 @@ export default function SupabaseProvider({
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_KEY!, {
-      accessToken: () => session?.getToken()
+      accessToken: () => session?.getToken({
+        template: 'supabase'
+      })
     })
-
-    // const client = createClient(
-    //   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    //   process.env.NEXT_PUBLIC_SUPABASE_KEY!,
-    //   {
-    //       accessToken: async () => {
-    //           const clerkToken = await session?.getToken({
-    //               template: 'supabase2',
-    //           })
-    //           return clerkToken ?? null
-    //       },
-    //   },
-    // )
 
     setSupabase(client)
     setIsLoaded(true)

@@ -92,3 +92,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.cl-userButtonBox {
+  @apply flex-row-reverse gap-0 px-2 hover:bg-white/75 
+    dark:hover:bg-gray-800/50 transition-colors flex-1 p-1 rounded-sm;
+}
+
+.cl-userButtonOuterIdentifier {
+  @apply text-sm font-medium;
+}

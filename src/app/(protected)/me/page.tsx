@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 import { toast } from 'sonner'
 import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { useSupabase } from '@/lib/supabase-provider'
@@ -108,7 +108,7 @@ export default function AppPage() {
   const { hasUnsavedChanges, isSaving } = useDebouncedSave(content, updateArticle)
 
   return (
-    <div className="flex h-screen gap-4 p-4">
+    <div className="flex h-screen">
       {/* Left Pane - Article List */}
       <Sidebar
         articles={articles}
@@ -131,12 +131,12 @@ export default function AppPage() {
       />
 
       {/* Right Pane - AI Chat */}
-      <div className="w-80 border-l pl-4">
+      {/* <div className="w-80 border-l p-4">
         <h2 className="text-xl font-bold mb-4">AI Assistant</h2>
         <div className="text-gray-500">
           AI chat functionality coming soon...
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

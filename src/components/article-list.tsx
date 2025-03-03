@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 
 interface ArticleListProps {
   articles: Article[]

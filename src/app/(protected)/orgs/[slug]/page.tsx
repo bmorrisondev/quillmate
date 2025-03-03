@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 import { toast } from 'sonner'
 import { OrganizationSwitcher, useUser } from '@clerk/nextjs'
 import { useSupabase } from '@/lib/supabase-provider'

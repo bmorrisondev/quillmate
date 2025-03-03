@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useSupabase } from '../supabase-provider'
-import { type Article } from '../supabase'
+import { type Article } from '../models'
 import { toast } from 'sonner'
 
 export function useArticles() {
@@ -13,14 +13,10 @@ export function useArticles() {
 
     setIsLoading(true)
     try {
-      // const { data, error } = await supabase
-      //   .from('articles_with_users')
-      //   .select('*')
-      //   .order('created_at', { ascending: false })      
       const { data, error } = await supabase
-        .from('articles2')
+        .from('articles_with_users')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('created_at', { ascending: false })      
 
       if (error) {
         throw error

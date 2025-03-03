@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/shadcn";
 import "@blocknote/shadcn/style.css";

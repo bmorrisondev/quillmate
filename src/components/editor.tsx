@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
@@ -134,7 +134,7 @@ export function Editor({
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col p-4">
       <input
         type="file"
         ref={fileInputRef}
@@ -218,7 +218,7 @@ export function Editor({
       </div>
       <EditorContent 
         editor={editor} 
-        className="flex-1 overflow-y-auto border rounded-md p-4"
+        className="flex-1 overflow-y-auto border rounded-md p-4 w-100"
         disabled={isLoading}
       />
     </div>

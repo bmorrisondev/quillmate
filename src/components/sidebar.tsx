@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { type Article } from '@/lib/supabase'
+import { type Article } from '@/lib/models'
 import { OrganizationSwitcher, UserButton, useUser } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 
@@ -25,10 +25,9 @@ export function Sidebar({
   const { user } = useUser()
 
   return (
-    <div className="w-64 border-r pr-4 flex flex-col">
+    <div className="w-64 border-r p-4 flex flex-col">
       <div className="flex items-center gap-2 pb-2">
-        <UserButton />
-        {user?.fullName}
+        <UserButton showName />
       </div>
       <Button 
         onClick={onNewArticle}
