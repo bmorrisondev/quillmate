@@ -14,11 +14,11 @@ const Context = createContext<SupabaseContext>({
   isLoaded: false
 })
 
-export default function SupabaseProvider({
-  children,
-}: {
+type Props = {
   children: React.ReactNode
-}) {
+}
+
+export default function SupabaseProvider({ children }: Props) {
   const { session } = useSession()
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -30,7 +30,7 @@ export default function SupabaseProvider({
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_KEY!, {
       accessToken: () => session?.getToken({
-        template: 'supabase'
+        template: "supabase"
       })
     })
 

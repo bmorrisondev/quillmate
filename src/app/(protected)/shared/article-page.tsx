@@ -42,8 +42,6 @@ function ArticlePage() {
   const onSave = async (content: string) => {
     if (!supabase || !params.articleId || !article) return
 
-    console.log(content)
-
     const title = extractTitleFromContent(content) || article.title
 
     const { error, data } = await supabase

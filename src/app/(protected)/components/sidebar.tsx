@@ -33,7 +33,7 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
     }
 
     const { error, data } = await supabase
-      .from(includeUsernames ? 'articles_with_users' : 'articles')
+      .from('articles')
       .insert(newArticle)
       .select()
       .single<Article>()

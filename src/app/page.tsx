@@ -1,5 +1,6 @@
 import { SignedIn, SignedOut } from "@clerk/nextjs"
 import Link from "next/link"
+import CreateArticleAnon from "@/app/create-article-anon"
 
 export default async function Page() {
 
@@ -13,6 +14,7 @@ export default async function Page() {
         <SignedIn>
           <Link href="/me">Go to App</Link>
         </SignedIn>
+        <CreateArticleAnon />
       </div>
     </div>
   )
