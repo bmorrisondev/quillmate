@@ -11,18 +11,16 @@ import { useArticleStore } from "../store"
 
 interface SidebarProps {
   showOrgSwitcher?: boolean
-  includeUsernames?: boolean
 }
 
 type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id'>
 
-export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: SidebarProps) {
+export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
   const { user } = useUser()
   const { organization } = useOrganization()
   const { supabase } = useSupabase()
   const router = useRouter()
-  const { articles, isLoading } = useArticleStore()
-  const { addArticle } = useArticleStore()
+  const { articles, isLoading, addArticle } = useArticleStore()
 
   async function onNewArticleClicked() {
     if (!supabase || !user) return
