@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/models'
-import { OrganizationSwitcher, useOrganization, UserButton, useUser } from '@clerk/nextjs'
+import { UserButton, useUser } from '@clerk/nextjs'
 import Link from "next/link"
 import { useSupabase } from "@/lib/supabase-provider"
 import { toast } from "sonner"
@@ -11,18 +11,15 @@ import { useArticleStore } from "../store"
 
 interface SidebarProps {
   showOrgSwitcher?: boolean
-  includeUsernames?: boolean
 }
 
 type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id'>
 
-export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: SidebarProps) {
+export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
   const { user } = useUser()
-  const { organization } = useOrganization()
   const { supabase } = useSupabase()
   const router = useRouter()
-  const { articles, isLoading } = useArticleStore()
-  const { addArticle } = useArticleStore()
+  const { articles, isLoading, addArticle } = useArticleStore()
 
   async function onNewArticleClicked() {
     if (!supabase || !user) return
@@ -30,7 +27,7 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
     const newArticle: NewArticle = {
       title: 'New Article',
       content: '',
-      owner_id: organization?.id ?? user.id
+      owner_id: user.id
     }
 
     const { error, data } = await supabase
@@ -42,7 +39,7 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
     if (error) {
       toast.error('Failed to create new article')
     } else {
-      router.push(`${organization ? `/orgs/${organization.slug}` : '/me'}/${data.id}`)
+      router.push(`/me/${data.id}`)
       addArticle(data)
     }
   }
@@ -62,7 +59,7 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
           articles.map((article) => (
             <Link
               key={article.id}
-              href={`${organization ? `/orgs/${organization.slug}` : '/me'}/${article.id}`}
+              href={`/me/${article.id}`}
               className="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100"
             >
               <h3 className="font-medium">{article.title || 'Untitled'}</h3>
@@ -81,15 +78,6 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
           ))
         )}
       </div>
-      {showOrgSwitcher && (
-        <OrganizationSwitcher
-          hideSlug={false}
-          hidePersonal={false}
-          afterCreateOrganizationUrl="/orgs/:slug"
-          afterSelectOrganizationUrl="/orgs/:slug"
-          afterSelectPersonalUrl="/me"
-        />
-      )}
     </div>
   )
 }
