@@ -14,7 +14,7 @@ interface SidebarProps {
   includeUsernames?: boolean
 }
 
-type NewArticle = Pick<Article, 'title' | 'content'>
+type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id'>
 
 export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: SidebarProps) {
   const { user } = useUser()
@@ -29,7 +29,8 @@ export function Sidebar({ showOrgSwitcher = true, includeUsernames = false }: Si
 
     const newArticle: NewArticle = {
       title: 'New Article',
-      content: ''
+      content: '',
+      owner_id: organization?.id ?? user.id
     }
 
     const { error, data } = await supabase
