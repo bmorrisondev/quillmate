@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { type Article } from '@/lib/models'
-import { UserButton, useUser } from '@clerk/nextjs'
+import { OrganizationSwitcher, useOrganization, UserButton, useUser } from '@clerk/nextjs'
 import Link from "next/link"
 import { useSupabase } from "@/lib/supabase-provider"
 import { toast } from "sonner"
@@ -17,6 +17,7 @@ type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id'>
 
 export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
   const { user } = useUser()
+  const { organization } = useOrganization()
   const { supabase } = useSupabase()
   const router = useRouter()
   const { articles, isLoading, addArticle } = useArticleStore()
@@ -27,7 +28,7 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
     const newArticle: NewArticle = {
       title: 'New Article',
       content: '',
-      owner_id: user.id
+      owner_id: organization?.id ?? user.id
     }
 
     const { error, data } = await supabase
@@ -39,7 +40,7 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
     if (error) {
       toast.error('Failed to create new article')
     } else {
-      router.push(`/me/${data.id}`)
+      router.push(`${organization ? `/orgs/${organization.slug}` : '/me'}/${data.id}`)
       addArticle(data)
     }
   }
@@ -59,7 +60,7 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
           articles.map((article) => (
             <Link
               key={article.id}
-              href={`/me/${article.id}`}
+              href={`${organization ? `/orgs/${organization.slug}` : '/me'}/${article.id}`}
               className="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100"
             >
               <h3 className="font-medium">{article.title || 'Untitled'}</h3>
@@ -78,6 +79,15 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
           ))
         )}
       </div>
+      {showOrgSwitcher && (
+        <OrganizationSwitcher
+          hideSlug={false}
+          hidePersonal={false}
+          afterCreateOrganizationUrl="/orgs/:slug"
+          afterSelectOrganizationUrl="/orgs/:slug"
+          afterSelectPersonalUrl="/me"
+        />
+      )}
     </div>
   )
 }
