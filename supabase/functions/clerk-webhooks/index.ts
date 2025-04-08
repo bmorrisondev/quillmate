@@ -3,10 +3,9 @@
 // This enables autocomplete, go to definition, etc.
 
 // Setup type definitions for built-in Supabase Runtime APIs
-import "jsr:@supabase/functions-js/edge-runtime.d.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3'
-
-console.log("Hello from Functions!")
+// import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from 'npm:@supabase/supabase-js'
+import { verifyWebhook } from 'npm:@clerk/backend/webhooks';
 
 interface WebhookEvent {
   data: {
@@ -49,37 +48,21 @@ interface WebhookEvent {
 Deno.serve(async (req) => {
   // Verify webhook signature
   const webhookSecret = Deno.env.get('CLERK_WEBHOOK_SECRET')
+
   if (!webhookSecret) {
     return new Response('Webhook secret not configured', { status: 500 })
   }
 
-  // Get the headers
-  const svix_id = req.headers.get('svix-id')
-  const svix_timestamp = req.headers.get('svix-timestamp')
-  const svix_signature = req.headers.get('svix-signature')
-
-  // If there are no headers, error out
-  if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response('Error occured -- no svix headers', { status: 400 })
-  }
-
-  // Get the body
-  const payload = await req.json()
-  const body = JSON.stringify(payload)
+  const event = await verifyWebhook(req, { signingSecret: webhookSecret });
 
   // Create supabase client
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
-
   if (!supabaseUrl || !supabaseServiceKey) {
     return new Response('Supabase credentials not configured', { status: 500 })
   }
-
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
-  // Handle the webhook
-  const event = payload as WebhookEvent
-  
   switch (event.type) {
     case 'user.created': {
       // Handle user creation
@@ -129,7 +112,7 @@ Deno.serve(async (req) => {
     }
 
     case 'organization.created': {
-      // Handle user update
+      // Handle organization creation
       const { data, error } = await supabase
         .from('organizations')
         .insert([{
@@ -151,7 +134,7 @@ Deno.serve(async (req) => {
 
     case 'organization.updated': {
       const { data, error } = await supabase
-        .from('owners')
+        .from('organizations')
         .update({
           name: event.data.name,
           updated_at: new Date(event.data.updated_at).toISOString(),

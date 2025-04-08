@@ -44,7 +44,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@supabase/auth-helpers-nextjs": "latest",
     "@supabase/ssr": "latest",
-    "@supabase/supabase-js": "^2.48.0",
+    "@supabase/supabase-js": "^2.49.4",
     "@tiptap/extension-code-block-lowlight": "^2.11.2",
     "@tiptap/extension-image": "^2.11.2",
     "@tiptap/extension-link": "^2.11.2",

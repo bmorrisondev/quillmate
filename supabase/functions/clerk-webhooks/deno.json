@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "@clerk/backend": "npm:@clerk/backend@^1.27.1"
+  }
+}
