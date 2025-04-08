@@ -10,5 +10,6 @@ export type Article = {
   first_name: string | null
   last_name: string | null
   avatar_url: string | null
+  created_by_id: string
 }
 

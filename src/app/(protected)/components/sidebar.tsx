@@ -13,7 +13,7 @@ interface SidebarProps {
   showOrgSwitcher?: boolean
 }
 
-type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id'>
+type NewArticle = Pick<Article, 'title' | 'content' | 'owner_id' | 'created_by_id'>
 
 export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
   const { user } = useUser()
@@ -28,7 +28,8 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
     const newArticle: NewArticle = {
       title: 'New Article',
       content: '',
-      owner_id: organization?.id ?? user.id
+      owner_id: organization?.id ?? user.id,
+      created_by_id: user.id
     }
 
     const { error, data } = await supabase
