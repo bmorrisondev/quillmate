@@ -8,6 +8,7 @@ import { useSupabase } from "@/lib/supabase-provider"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useArticleStore } from "../store"
+import { useEffect, useState } from "react"
 
 interface SidebarProps {
   showOrgSwitcher?: boolean
@@ -20,7 +21,38 @@ export function Sidebar({ showOrgSwitcher = true }: SidebarProps) {
   const { organization } = useOrganization()
   const { supabase } = useSupabase()
   const router = useRouter()
-  const { articles, isLoading, addArticle } = useArticleStore()
+  const { isLoading, addArticle } = useArticleStore()
+
+  const [articles, setArticles] = useState<Article[]>([])
+
+  useEffect(() => {
+    if (!supabase || !user) return
+
+    const fetchArticles = async () => {
+      const { data: articleRecords, error: articleError } = await supabase
+        .from('articles')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      const { data: userRecords, error: userError } = await supabase
+        .from('users')
+        .select('*')
+
+      const articles = articleRecords?.map(article => ({
+        ...article,
+        first_name: userRecords?.find(user => user.id === article.created_by_id)?.first_name,
+        last_name: userRecords?.find(user => user.id === article.created_by_id)?.last_name
+      })) ?? []
+
+      if (articleError || userError) {
+        toast.error('Failed to fetch articles')
+      } else {
+        setArticles(articles)
+      }
+    }
+
+    fetchArticles()
+  }, [supabase, user])
 
   async function onNewArticleClicked() {
     if (!supabase || !user) return
