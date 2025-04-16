@@ -5,6 +5,7 @@ import { FeaturesGrid } from "@/components/features-grid"
 
 export default async function Page() {
 
+
   return (
     <div className="flex min-h-svh items-center justify-center bg-gradient-to-b from-white to-gray-50 dark:from-gray-950 dark:to-gray-900">
       <div className="flex flex-col items-center gap-8 p-8 max-w-2xl w-full text-center">

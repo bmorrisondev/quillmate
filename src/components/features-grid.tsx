@@ -1,5 +1,7 @@
+'use client'
 import { PenLine, Sparkles, Users } from "lucide-react"
-import { type ReactElement } from "react"
+import { useEffect, type ReactElement } from "react"
+import { useSession, useUser } from "@clerk/nextjs"
 
 /** Represents a core feature of Quillmate with its visual and textual properties */
 interface Feature {
@@ -43,6 +45,13 @@ const features: Feature[] = [
  * @returns A responsive grid of feature cards with icons and descriptions
  */
 export function FeaturesGrid(): ReactElement {
+  const { user } = useUser()
+  const { session } = useSession()
+
+  useEffect(() => {
+    console.log(user, session)
+  }, [user, session])
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-4">
       {features.map((feature) => {

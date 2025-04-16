@@ -48,7 +48,7 @@ export const useSupabase = () => {
   if (context === undefined) {
     throw new Error('useSupabase must be used within a SupabaseProvider')
   }
-  return { 
+  return {
     supabase: context.supabase,
     isLoaded: context.isLoaded
   }
