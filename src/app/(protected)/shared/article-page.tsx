@@ -8,6 +8,8 @@ import { useSupabase } from '@/lib/supabase-provider'
 import { extractTitleFromContent } from '@/lib/utils/content'
 import { useArticleStore } from '../store'
 
+import ChatFAB from '../components/ChatFAB';
+
 function ArticlePage() {
   const params = useParams()
   const [ isLoading, setIsLoading ] = useState(true)
@@ -71,10 +73,16 @@ function ArticlePage() {
   }
 
   return (
-    <Editor
-      article={article}
-      onSave={onSave}  
-    />
+    <>
+      <Editor
+        article={article}
+        onSave={onSave}  
+      />
+      {/* Mount the floating chat button */}
+      {article && (
+        <ChatFAB articleId={article.id} articleContent={article.content} />
+      )}
+    </>
   )
 }
 
