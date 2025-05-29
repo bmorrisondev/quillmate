@@ -1,4 +1,4 @@
-import { __experimental_PricingTable } from '@clerk/nextjs'
+import { PricingTable } from '@clerk/nextjs'
 import React from 'react'
 import Link from 'next/link'
 
@@ -6,7 +6,7 @@ function SubscribePage() {
   return (
     <>
       {/* Navigation Bar */}
-      <nav className="w-full px-4 py-3 flex items-center justify-between bg-white/70 dark:bg-gray-950/70 backdrop-blur-md fixed top-0 left-0 z-20 border-b border-gray-200 dark:border-gray-800">
+      <nav className="w-full px-4 py-3 flex items-center justify-between fixed top-0 left-0 z-20">
         <Link href="/" className="text-lg font-semibold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
           ← Back to Home
         </Link>
@@ -31,8 +31,8 @@ function SubscribePage() {
             Ready to get started? Choose your plan below:
           </span>
           </div>
-          <div className="w-full flex justify-center">
-            <__experimental_PricingTable />
+          <div className="w-[800px]">
+            <PricingTable />
           </div>
         </div>
       </div>
